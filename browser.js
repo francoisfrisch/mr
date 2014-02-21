@@ -84,9 +84,8 @@ var DoubleUnderscore = "__",
     globalEvalConstantA = "(function ",
     globalEvalConstantB = "(require, exports, module) {",
     globalEvalConstantC = "//*/\n})\n//# sourceMappingURL=data:text/text;base64,",
-    sourceMapA = '{"version":3,"file":"x.js.map","names":["identity"],"mappings":"AAAA;',
-    sourceMapLine = "AACA;",
-    sourceMapLastLine = "AACA",
+    sourceMapA = '{"version":3,"file":"x.js.map","names":["identity"],"mappings":"AAAA',
+    sourceMapLine = ";AACA",
     sourceMapB = '","sources":["',
     sourceMapC = '"]}',
     LINEREGEX = /\n|\r|\r\n/g;
@@ -110,9 +109,13 @@ Require.Compiler = function (config) {
 
         var displayName = (module.require.config.name + DoubleUnderscore + module.id).replace(/[^\w\d]/g, Underscore),
             moduleText = module.text,
-            mapping;
+            mapping, numberOfLines = moduleText.match(LINEREGEX);
 
-        mapping = new Array(moduleText.match(LINEREGEX).length-1).join(sourceMapLine) + sourceMapLastLine;
+        if(numberOfLines) {
+            mapping = new Array(numberOfLines.length).join(sourceMapLine);
+        } else {
+            mapping = "";
+        }
         try {
             module.factory = globalEval(
                 globalEvalConstantA +
